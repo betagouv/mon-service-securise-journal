@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
+
+  metabase:
+    image: metabase/metabase
+    environment:
+# MB_DB_CONNECTION_URI
+# https://www.metabase.com/docs/latest/configuring-metabase/environment-variables#mb_db_connection_uri
+# Tenter avec cette variable, et en enlevant le "ports" de postgres
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=mss-journal
+      - MB_DB_PORT=5432
+      - MB_DB_USER=metabase
+      - MB_DB_PASS=
+      - MB_DB_HOST=db
+    networks:
+      - postgres
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+networks:
+  postgres:
