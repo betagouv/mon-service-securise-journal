@@ -6,10 +6,24 @@ survenus dans [MonServiceSécurisé](https://github.com/betagouv/mon-service-sec
 Ces événements métiers ont vocation à être utilisés par la 
 partie _reporting_ de MonServiceSécurisé.
 
+C'est [Metabase](https://www.metabase.com/), hébergé chez Scalingo, qui a été choisi 
+comme outil de _reporting_.
+
+## Philosophie
+
+Les événements métiers MonServiceSécurisé sont stockés dans une table `journal_mss.evenements`.  
+Cette table est utilisée comme source de données de Metabase. 
+
+Autrement dit : 
+ 1. Une action métier a lieu sur [MonServiceSecurise](https://monservicesecurise.beta.gouv.fr)…
+ 2. …donnant lieu à l'émission d'un événement…
+ 3. …qui est consigné dans `journal_mss.evenements`…
+ 4. …rendant ainsi accessible l'information via Metabase.
+
 ## Configuration de l'environnement de développement
 
 Il est nécessaire en prérequis d'avoir installé [Git](https://git-scm.com/),
-[Docker](https://www.docker.com/) et [Node.js v16](https://nodejs.org/en/).
+[Docker Engine](https://docs.docker.com/get-docker/) et [Docker Compose](https://docs.docker.com/compose/install/).
 
 Commencer par récupérer les sources du projet et aller dans le répertoire créé.
 
@@ -17,64 +31,48 @@ Commencer par récupérer les sources du projet et aller dans le répertoire cr�
 $ git clone https://github.com/betagouv/mon-service-securise-journal.git && cd mon-service-securise-journal
 ```
 
-### Créer la base de données de MonServiceSécurisé-Journal
-
-Lancer le conteneur de base de données puis y créer une base de données `mss-journal` et un utilisateur `metabase` 
+Créer la base de données `mss-journal` et un utilisateur `metabase` 
 qui sera utilisé par Metabase.
-
-La base de données `mss-journal` sert :
- - à stocker les événements métiers de MonServiceSécurisé
- - comme base de données de travail de Metabase
 
 ```sh
 $ docker compose up db
-$ docker exec -t mon-service-securise-journal-db-1 createdb -U postgres mss-journal
-$ docker exec -t mon-service-securise-journal-db-1 createuser -U postgres metabase
+$ docker compose exec db createdb -U postgres mss-journal
+$ docker compose exec db createuser -U postgres metabase
 ```
 
+Créer un fichier `.env` en copiant fichier `.env.template` puis valoriser chaque variable du `.env`.
 
-
-### Créer le schéma nécessaire à MonServiceSécurisé-Journal
-```sh
-$ docker exec -t mon-service-securise-journal-db-1 psql -U postgres -c 'CREATE SCHEMA journal_mss
-    CREATE TABLE evenements ( 
-        id UUID primary key, 
-        date date, 
-        type varchar, 
-        donnees json 
-      );'
-```
-
-### Donner les droits à l'utilisateur metabase
+Mettre à niveau le schéma de la base de données, via [`knex.js`](https://knexjs.org/).
 
 ```sh
-$ docker exec -t mon-service-securise-journal-db-1 psql -U postgres -c 'GRANT USAGE ON SCHEMA journal_mss TO metabase;'
-$ docker exec -t mon-service-securise-journal-db-1 psql -U postgres -c 'GRANT SELECT ON ALL TABLES IN SCHEMA journal_mss TO metabase;'
+$ npm install
+$ npm run build
+```
+
+Donner les droits en lecture sur les éléments créés à l'utilisateur `metabase`.
+
+```sh
+$ docker compose exec db psql -U postgres -d mss-journal -c 'GRANT USAGE ON SCHEMA journal_mss TO metabase;'
+$ docker compose exec db psql -U postgres -d mss-journal -c 'GRANT SELECT ON ALL TABLES IN SCHEMA journal_mss TO metabase;'
 ```
 
 
-
-
-
-### Configurer Metabase
-
-Arrivé ici, vous pouvez démarrer Metabase et le configurer :
+Démarrer Metabase.
 
 ```sh
 $ ./scripts/start.sh
 ```
 
+Accéder à Metabase en visitant http://localhost:3000/setup.  
 
+Paramétrer Metabase en suivant les instructions à l'écran :
+ - Base de données : PostgreSQL
+ - Host : `db` (qui apparaît dans [./docker-compose.yml](./docker-compose.yml))
+ - Port : `5432` (qui apparaît dans [./docker-compose.yml](./docker-compose.yml))
+ - Database name : `mss-journal`
+ - Username : `metabase`
+ - Password : laisser vide
+ - Schemas : `Only these…` > `journal_mss`
 
-Créer un fichier `.env` à partir du fichier `.env.template` et renseigner les diverses variables d'environnement.
-
-Lancer le script `scripts/start.sh`
-
-Se connecter au conteneur de la base de données et créer une nouvelle base `mss-journal` pour un utilisateur postgres.
-
-
-Exécuter les migrations depuis le conteneur du serveur web.
-
-```sh
-$ docker exec -t mon-service-securise_web_1 npx knex migrate:latest
-```
+Vous êtes à présent prêt à [poser des questions Metabase](https://www.metabase.com/docs/latest/questions/start) sur les 
+données de MonServiceSécurisé.
