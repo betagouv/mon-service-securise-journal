@@ -1,1 +1,1 @@
-metabase: HEROKU=true ./metabase/bin/start
+web: HEROKU=true ./metabase/bin/start
