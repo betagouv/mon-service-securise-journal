@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "engines": {
-    "node": "16",
-    "npm": "8"
-  },
-  "scripts": {
-    "build": "knex migrate:latest"
+    "node": "18.12.1",
+    "npm": "8.19.2"
   },
   "repository": {
     "type": "git",

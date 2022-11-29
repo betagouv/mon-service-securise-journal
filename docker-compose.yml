@@ -28,5 +28,17 @@ services:
     depends_on:
       - db
 
+  # https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
+  node:
+    image: node:18.12.1 # Version LTS
+    volumes:
+      - ./:/home/node/app
+    working_dir: /home/node/app
+    command: "./scripts/migrations.sh"
+    networks:
+      - postgres
+    depends_on:
+      - db
+
 networks:
   postgres:

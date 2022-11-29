@@ -42,11 +42,10 @@ $ docker compose exec db createuser -U postgres metabase
 
 Créer un fichier `.env` en copiant fichier `.env.template` puis valoriser chaque variable du `.env`.
 
-Mettre à niveau le schéma de la base de données, via [`knex.js`](https://knexjs.org/).
+Mettre à niveau le schéma de la base de données, via [`knex.js`](https://knexjs.org/) qui s'exécute dans le conteneur `node`.
 
 ```sh
-$ npm install
-$ npm run build
+$ docker compose up node
 ```
 
 Donner les droits en lecture sur les éléments créés à l'utilisateur `metabase`.
