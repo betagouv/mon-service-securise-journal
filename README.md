@@ -35,10 +35,19 @@ Créer la base de données `mss-journal` et un utilisateur `metabase`
 qui sera utilisé par Metabase.
 
 ```sh
-$ docker compose up db
-$ docker compose exec db createdb -U postgres mss-journal
-$ docker compose exec db createuser -U postgres metabase
+$ docker compose up mss-journal-db
+$ docker compose exec mss-journal-db createdb -U postgres mss-journal
+$ docker compose exec mss-journal-db createuser -U postgres metabase
 ```
+
+Vérifier la présence du `network` Docker `mss-network`.
+
+```sh
+$ docker network ls | grep mss-network
+```
+
+Cette commande devrait montrer le réseau `mss-network`. Si ce n'est pas le cas, se référer au `README` de
+[MonServiceSécurisé](https://github.com/betagouv/mon-service-securise) pour la création de celui-ci.
 
 Créer un fichier `.env` en copiant fichier `.env.template` puis valoriser chaque variable du `.env`.
 
@@ -51,8 +60,8 @@ $ docker compose up node
 Donner les droits en lecture sur les éléments créés à l'utilisateur `metabase`.
 
 ```sh
-$ docker compose exec db psql -U postgres -d mss-journal -c 'GRANT USAGE ON SCHEMA journal_mss TO metabase;'
-$ docker compose exec db psql -U postgres -d mss-journal -c 'GRANT SELECT ON ALL TABLES IN SCHEMA journal_mss TO metabase;'
+$ docker compose exec mss-journal-db psql -U postgres -d mss-journal -c 'GRANT USAGE ON SCHEMA journal_mss TO metabase;'
+$ docker compose exec mss-journal-db psql -U postgres -d mss-journal -c 'GRANT SELECT ON ALL TABLES IN SCHEMA journal_mss TO metabase;'
 ```
 
 
@@ -66,7 +75,7 @@ Accéder à Metabase en visitant http://localhost:3000/setup.
 
 Paramétrer Metabase en suivant les instructions à l'écran :
  - Base de données : PostgreSQL
- - Host : `db` (qui apparaît dans [./docker-compose.yml](./docker-compose.yml))
+ - Host : `mss-journal-db` (qui apparaît dans [./docker-compose.yml](./docker-compose.yml))
  - Port : `5432` (qui apparaît dans [./docker-compose.yml](./docker-compose.yml))
  - Database name : `mss-journal`
  - Username : `metabase`

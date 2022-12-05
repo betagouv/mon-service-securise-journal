@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-  db:
+  mss-journal-db:
     image: postgres
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
-      - postgres
+      - mss-network
     ports:
       - "5432:5432"
     volumes:
@@ -20,13 +20,13 @@ services:
       - MB_DB_PORT=5432
       - MB_DB_USER=metabase
       - MB_DB_PASS=
-      - MB_DB_HOST=db
+      - MB_DB_HOST=mss-journal-db
     networks:
-      - postgres
+      - mss-network
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      - mss-journal-db
 
   # https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
   node:
@@ -36,9 +36,10 @@ services:
     working_dir: /home/node/app
     command: "./scripts/migrations.sh"
     networks:
-      - postgres
+      - mss-network
     depends_on:
-      - db
+      - mss-journal-db
 
 networks:
-  postgres:
+  mss-network:
+    external: true
