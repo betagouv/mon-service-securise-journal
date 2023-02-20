@@ -18,8 +18,8 @@ services:
       - MB_DB_TYPE=postgres
       - MB_DB_DBNAME=mss-journal
       - MB_DB_PORT=5432
-      - MB_DB_USER=metabase
-      - MB_DB_PASS=
+      - MB_DB_USER=postgres
+      - MB_DB_PASS=postgres
       - MB_DB_HOST=mss-journal-db
     networks:
       - mss-network
