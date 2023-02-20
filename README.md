@@ -80,7 +80,7 @@ Paramétrer Metabase en suivant les instructions à l'écran :
  - Database name : `mss-journal`
  - Username : `metabase`
  - Password : laisser vide
- - Schemas : `Only these…` > `journal_mss`
+ - Schemas : `Only these…` > `journal_mss` (Attention ! C'est un `_`  et non un `-`)
 
 Vous êtes à présent prêt à [poser des questions Metabase](https://www.metabase.com/docs/latest/questions/start) sur les 
 données de MonServiceSécurisé.
