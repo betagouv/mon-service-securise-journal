@@ -1,8 +1,6 @@
-const procedureStockee = `journal_mss.charge_donnees()`;
-
 exports.up = knex => knex.raw(`
 
-CREATE OR REPLACE PROCEDURE ${procedureStockee}
+CREATE OR REPLACE PROCEDURE journal_mss.charge_donnees()
 LANGUAGE SQL
 AS $$
 
@@ -14,7 +12,7 @@ INSERT INTO journal_mss.donnees_completude (id_service,
                                             taux_completude,
                                             date,
                                             donnees_origine)
-SELECT distinct evenements.donnees ->> 'idService',
+SELECT DISTINCT evenements.donnees ->> 'idService',
                 (first_value(donnees ->> 'nombreTotalMesures') over par_service_par_jour)::integer,
                 (first_value(donnees ->> 'nombreMesuresCompletes') over par_service_par_jour)::integer,
                 (first_value(donnees ->> 'nombreMesuresCompletes') over par_service_par_jour)::float
@@ -23,13 +21,13 @@ SELECT distinct evenements.donnees ->> 'idService',
                 first_value(donnees) over par_service_par_jour
 FROM journal_mss.evenements
 WHERE evenements.type = 'COMPLETUDE_SERVICE_MODIFIEE'
-  and evenements.donnees ->> 'idService' not in
+  AND evenements.donnees ->> 'idService' NOT IN
       (select donnees ->> 'idService' from journal_mss.evenements where type = 'SERVICE_SUPPRIME')
-window par_service_par_jour as ( partition by evenements.donnees ->> 'idService', date::date order by date desc );
+WINDOW par_service_par_jour AS ( partition by evenements.donnees ->> 'idService', date::date order by date desc );
 
 $$;
 
 `);
 
-exports.down = knex => knex.raw(`DROP PROCEDURE IF EXISTS ${procedureStockee};`)
+exports.down = knex => knex.raw(`DROP PROCEDURE IF EXISTS journal_mss.charge_donnees();`)
 
