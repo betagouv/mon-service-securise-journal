@@ -1,0 +1,7 @@
+{
+  "jobs": [
+    {
+      "command": "*/10 * * * * psql -d $SCALINGO_POSTGRESQL_URL -c \"CALL journal_mss.charge_donnees()\""
+    }
+  ]
+}
