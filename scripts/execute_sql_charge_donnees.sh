@@ -11,4 +11,18 @@ if [[ "$INSTANCE_NUMBER" != "0" ]]; then
   exit 0
 fi
 
-psql -d "$URL_SERVEUR_BASE_DONNEES" -c "CALL journal_mss.charge_donnees()"
+psql -d "$URL_SERVEUR_BASE_DONNEES" <<SQL
+
+  CALL journal_mss.charge_donnees_completude();
+  CALL journal_mss.charge_donnees_description_service();
+  CALL journal_mss.charge_donnees_collaboratif_service();
+  CALL journal_mss.charge_donnees_type_service();
+  CALL journal_mss.charge_donnees_fonctionnalite_service();
+  CALL journal_mss.charge_donnees_caractere_personnel_service();
+  CALL journal_mss.charge_donnees_statuts_des_mesures();
+  CALL journal_mss.charge_donnees_risques();
+  CALL journal_mss.charge_donnees_indice_cyber_courant();
+
+  INSERT INTO journal_mss.technique_chargement_donnees(date_chargement) VALUES (now());
+
+SQL
