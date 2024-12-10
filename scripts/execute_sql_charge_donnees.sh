@@ -23,6 +23,7 @@ psql -d "$URL_SERVEUR_BASE_DONNEES" <<SQL
   CALL journal_mss.charge_donnees_risques();
   CALL journal_mss.charge_donnees_indice_cyber_courant();
   CALL journal_mss.charge_donnees_indice_cyber_hebdomadaire();
+  CALL journal_mss.charge_donnees_completude_premiere_fois_80();
 
   INSERT INTO journal_mss.technique_chargement_donnees(date_chargement) VALUES (now());
 
