@@ -6,8 +6,7 @@ survenus dans [MonServiceSécurisé](https://github.com/betagouv/mon-service-sec
 Ces événements métiers ont vocation à être utilisés par la 
 partie _reporting_ de MonServiceSécurisé.
 
-C'est [Metabase](https://www.metabase.com/), hébergé chez Scalingo, qui a été choisi 
-comme outil de _reporting_.
+C'est [Metabase](https://www.metabase.com/) qui a été choisi comme outil de _reporting_.
 
 ## Philosophie
 
