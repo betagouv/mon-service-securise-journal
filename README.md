@@ -56,6 +56,12 @@ Mettre à niveau le schéma de la base de données, via [`knex.js`](https://knex
 $ docker compose up node
 ```
 
+Créer les procédures stockées grâce au script [`cree_toutes_les_procedures.sh`](./procedures_stockees/cree_toutes_les_procedures.sh)
+
+```sh
+$ URL_SERVEUR_BASE_DONNEES=postgres://postgres:postgres@localhost:5433/mss-journal ./procedures_stockees/cree_toutes_les_procedures.sh
+```
+
 Donner les droits en lecture sur les éléments créés à l'utilisateur `metabase`.
 
 ```sh
