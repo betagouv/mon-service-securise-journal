@@ -30,11 +30,11 @@ services:
 
   # https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
   node:
-    image: node:18.12.1 # Version LTS
+    image: node:22
     volumes:
       - ./:/home/node/app
     working_dir: /home/node/app
-    command: "./scripts/migrations.sh"
+    command: sh -c "npm ci && ./node_modules/.bin/knex migrate:latest"
     networks:
       - mss-network
     depends_on:
