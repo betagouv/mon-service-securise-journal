@@ -18,6 +18,7 @@ psql -d "$URL_SERVEUR_BASE_DONNEES" <<SQL
   CALL journal_mss.charge_donnees_description_service_v2();
   CALL journal_mss.charge_donnees_collaboratif_service();
   CALL journal_mss.charge_donnees_type_service();
+  CALL journal_mss.charge_donnees_type_service_v2();
   CALL journal_mss.charge_donnees_fonctionnalite_service();
   CALL journal_mss.charge_donnees_caractere_personnel_service();
   CALL journal_mss.charge_donnees_statuts_des_mesures();
