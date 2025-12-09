@@ -19,8 +19,6 @@ WITH tous_les_evenements AS (
     FROM journal_mss.evenements,
       jsonb_to_recordset(donnees -> 'detailMesures') AS details("idMesure" text, "statut" text)
     WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
-    AND donnees ->> 'idService' NOT IN
-       (select donnees ->> 'idService' from journal_mss.evenements where type = 'SERVICE_SUPPRIME')
     AND (donnees->>'versionService' IS NULL OR donnees->>'versionService' = 'v1')
 )
 SELECT DISTINCT
