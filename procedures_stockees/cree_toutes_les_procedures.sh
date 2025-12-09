@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "💻 Création de toutes les procédures stockées"
+echo "💻 Création de toutes les procédures stockées…"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
