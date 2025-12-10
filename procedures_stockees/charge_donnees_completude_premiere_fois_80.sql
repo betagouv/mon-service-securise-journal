@@ -28,7 +28,7 @@ WITH tout_sauf_indice AS (
 indice AS (
     SELECT id as id_evenement, indice as indice_cyber
     FROM journal_mss.donnees_completude c,
-        jsonb_to_recordset(donnees_origine->'detailIndiceCyber') as x(categorie text, indice float)
+        jsonb_to_recordset(c.detail_indice_cyber) as x(categorie text, indice float)
     WHERE categorie = 'total'
 )
 SELECT a.id_service,
