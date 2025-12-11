@@ -19,27 +19,22 @@ INSERT INTO journal_mss.donnees_description_service (id_service,
                                                      niveau_securite,
                                                      niveau_securite_minimal,
                                                      date)
-SELECT DISTINCT donnees ->> 'idService',
-                COALESCE((first_value(donnees -> 'nombreOrganisationsUtilisatrices' ->> 'borneBasse')
-                          over par_service), '1')::integer,
-                COALESCE((first_value(donnees -> 'nombreOrganisationsUtilisatrices' ->> 'borneHaute')
-                          over par_service), '1')::integer,
-                first_value(donnees ->> 'provenanceService') over par_service,
-                first_value(donnees ->> 'statutDeploiement') over par_service,
-                (first_value(donnees ->> 'pointsAcces') over par_service)::integer,
-                (first_value(donnees ->> 'fonctionnalitesSpecifiques') over par_service)::integer,
-                (first_value(donnees ->> 'donneesSensiblesSpecifiques') over par_service)::integer,
-                first_value(donnees ->> 'localisationDonnees') over par_service,
-                first_value(donnees ->> 'delaiAvantImpactCritique') over par_service,
-                (first_value(donnees ->> 'risqueJuridiqueFinancierReputationnel') over par_service)::boolean,
-                first_value(donnees ->> 'niveauSecurite') over par_service,
-                first_value(donnees ->> 'niveauSecuriteMinimal') over par_service,
-                first_value(date) over par_service
-FROM journal_mss.evenements
-WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
-  AND (donnees->>'versionService' IS NULL OR donnees->>'versionService' = 'v1')
-  AND donnees ->> 'idService' NOT IN
-      (select donnees ->> 'idService' from journal_mss.evenements where type = 'SERVICE_SUPPRIME')
-WINDOW par_service AS (partition by donnees ->> 'idService' order by date desc);
+SELECT
+    id_service,
+    COALESCE(donnees -> 'nombreOrganisationsUtilisatrices' ->> 'borneBasse', '1')::integer,
+    COALESCE(donnees -> 'nombreOrganisationsUtilisatrices' ->> 'borneHaute', '1')::integer,
+    donnees ->> 'provenanceService',
+    donnees ->> 'statutDeploiement' ,
+    (donnees ->> 'pointsAcces')::integer,
+    (donnees ->> 'fonctionnalitesSpecifiques')::integer,
+    (donnees ->> 'donneesSensiblesSpecifiques')::integer,
+    donnees ->> 'localisationDonnees',
+    donnees ->> 'delaiAvantImpactCritique',
+    (donnees ->> 'risqueJuridiqueFinancierReputationnel')::boolean,
+    donnees ->> 'niveauSecurite',
+    donnees ->> 'niveauSecuriteMinimal',
+    date
+FROM journal_mss.vue_tout_dernier_completude_par_service
+WHERE (version_service IS NULL OR version_service = 'v1');
 
 $$;

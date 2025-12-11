@@ -19,7 +19,7 @@ WITH evenements_risques_generaux AS (
         rg."niveauGravite" as niveau_gravite,
         rg."niveauVraisemblance" as niveau_vraisemblance,
         date
-    FROM journal_mss.evenements,
+    FROM journal_mss.vue_evenements_sans_services_supprimes,
       jsonb_to_recordset(donnees -> 'risquesGeneraux') AS rg("id" text, "niveauGravite" text, "niveauVraisemblance" text)
     WHERE type = 'RISQUES_SERVICE_MODIFIES'
     AND (NULLIF(rg."niveauGravite", '') IS NOT NULL OR NULLIF(rg."niveauVraisemblance", '')  IS NOT NULL)
@@ -52,7 +52,7 @@ WITH evenements_risques_specifiques AS (
         rs."niveauGravite" as niveau_gravite,
         rs."niveauVraisemblance" as niveau_vraisemblance,
         date
-    FROM journal_mss.evenements,
+    FROM journal_mss.vue_evenements_sans_services_supprimes,
     jsonb_to_recordset(donnees -> 'risquesSpecifiques') AS rs("id" text, "niveauGravite" text, "niveauVraisemblance" text)
     WHERE type = 'RISQUES_SERVICE_MODIFIES'
     AND (NULLIF(rs."niveauGravite", '') IS NOT NULL OR NULLIF(rs."niveauVraisemblance", '')  IS NOT NULL)

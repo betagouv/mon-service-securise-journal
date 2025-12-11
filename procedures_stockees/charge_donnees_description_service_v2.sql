@@ -20,28 +20,23 @@ INSERT INTO journal_mss.donnees_description_service_v2 (id_service,
                                                         localisation_donnees_traitees,
                                                         duree_dysfonctionnement_acceptable,
                                                         date)
-SELECT DISTINCT
-    donnees ->> 'idService',
-    first_value(donnees ->> 'pointsAcces') over par_service:: integer,
-    first_value(donnees ->> 'audienceCible') over par_service,
-    first_value(donnees ->> 'niveauSecurite') over par_service,
-    first_value(donnees ->> 'niveauSecuriteMinimal') over par_service,
-    first_value(donnees ->> 'typeHebergement') over par_service,
-    first_value(donnees ->> 'ouvertureSysteme') over par_service,
-    first_value(donnees ->> 'statutDeploiement') over par_service,
-    first_value(donnees ->> 'nombreTotalMesures') over par_service:: integer,
-    first_value(donnees ->> 'nombreMesuresCompletes') over par_service:: integer,
-    first_value(donnees ->> 'categoriesDonneesTraiteesSupplementaires') over par_service:: integer,
-    first_value(donnees ->> 'volumetrieDonneesTraitees') over par_service,
-    first_value(donnees ->> 'localisationDonneesTraitees') over par_service,
-    first_value(donnees ->> 'dureeDysfonctionnementAcceptable') over par_service,
-    first_value(date) over par_service
-FROM journal_mss.evenements
-WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
-  AND (donnees->>'versionService' = 'v2')
-  AND donnees ->> 'idService' NOT IN (select donnees ->> 'idService'
-                                      from journal_mss.evenements
-                                      where type = 'SERVICE_SUPPRIME')
-WINDOW par_service AS (partition by donnees ->> 'idService' order by date desc)
+SELECT
+    id_service,
+    (donnees ->> 'pointsAcces')::integer,
+    donnees ->> 'audienceCible',
+    donnees ->> 'niveauSecurite',
+    donnees ->> 'niveauSecuriteMinimal',
+    donnees ->> 'typeHebergement',
+    donnees ->> 'ouvertureSysteme',
+    donnees ->> 'statutDeploiement',
+    (donnees ->> 'nombreTotalMesures')::integer,
+    (donnees ->> 'nombreMesuresCompletes')::integer,
+    (donnees ->> 'categoriesDonneesTraiteesSupplementaires')::integer,
+    donnees ->> 'volumetrieDonneesTraitees',
+    donnees ->> 'localisationDonneesTraitees',
+    donnees ->> 'dureeDysfonctionnementAcceptable',
+    date
+FROM journal_mss.vue_tout_dernier_completude_par_service
+WHERE version_service = 'v2';
 
 $$;
