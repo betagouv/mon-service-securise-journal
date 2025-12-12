@@ -14,9 +14,8 @@ WITH autorisations_par_service AS (
         donnees ->> 'idService' as id_service,
         first_value(donnees -> 'autorisations') over par_service as autorisations,
         first_value(date) over par_service  as date
-        FROM journal_mss.evenements
+        FROM journal_mss.vue_evenements_sans_services_supprimes
         where type = 'COLLABORATIF_SERVICE_MODIFIE'
-        AND donnees ->> 'idService' NOT IN (select donnees ->> 'idService' from journal_mss.evenements where type = 'SERVICE_SUPPRIME')
         WINDOW par_service AS (partition by donnees ->> 'idService' order by date desc)
 )
 SELECT id_service,

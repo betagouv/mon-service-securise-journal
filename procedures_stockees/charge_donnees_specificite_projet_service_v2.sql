@@ -6,22 +6,17 @@ $$
 TRUNCATE TABLE journal_mss.donnees_specificite_projet_service_v2;
 
 INSERT INTO journal_mss.donnees_specificite_projet_service_v2 (id_service, date, specificite_projet)
-WITH specificite_projet_par_service AS (
-    SELECT DISTINCT
-        donnees ->> 'idService' as id_service,
-        first_value(date) over par_service as date,
-        first_value(donnees -> 'specificitesProjet') over par_service as specificitesProjet
-    FROM journal_mss.evenements
-    WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
-      AND donnees->>'specificitesProjet' IS NOT NULL
-      AND (donnees->>'versionService' = 'v2')
-      AND donnees ->> 'idService' NOT IN (select donnees ->> 'idService'
-                                          from journal_mss.evenements
-                                          where type = 'SERVICE_SUPPRIME')
-    WINDOW par_service AS (partition by donnees ->> 'idService' order by date desc)
+WITH dernieres_par_service AS (
+    SELECT
+    	id_service,
+    	date,
+        donnees -> 'specificitesProjet' as specificitesProjet
+    FROM journal_mss.vue_tout_dernier_completude_par_service
+    WHERE version_service = 'v2'
+    AND donnees -> 'specificitesProjet' IS NOT NULL
 )
 SELECT id_service, date, specificite_projet#>> '{}' -- #>> '{}' pour extraire la valeur sans les guillemets.
-FROM specificite_projet_par_service
+FROM dernieres_par_service
 CROSS JOIN LATERAL jsonb_array_elements(specificitesProjet) AS specificite_projet;
 
 $$;

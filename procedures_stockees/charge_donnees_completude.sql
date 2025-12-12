@@ -18,9 +18,8 @@ SELECT DISTINCT donnees ->> 'idService',
                     / (first_value(donnees ->> 'nombreTotalMesures') over par_service_par_jour)::float,
                 first_value(donnees ->> 'detailIndiceCyber') over par_service_par_jour::jsonb,
                 first_value(date) over par_service_par_jour
-FROM journal_mss.evenements
+FROM journal_mss.vue_evenements_sans_services_supprimes
 WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
-  AND donnees ->> 'idService' NOT IN (select donnees ->> 'idService' from journal_mss.evenements where type = 'SERVICE_SUPPRIME')
 WINDOW par_service_par_jour AS ( partition by donnees ->> 'idService', date::date order by date desc );
 
 $$;
