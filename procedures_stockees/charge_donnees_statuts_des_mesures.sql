@@ -9,7 +9,7 @@ INSERT INTO journal_mss.donnees_statuts_des_mesures (id_service, version_service
 WITH versions_actuelles_des_services AS (
     SELECT DISTINCT
         donnees ->> 'idService' as id_service,
-        first_value(donnees ->> 'versionService') over par_service as version_service
+        COALESCE(first_value(donnees ->> 'versionService') over par_service, 'v1') as version_service
     FROM journal_mss.evenements e
     WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
     WINDOW par_service AS (partition by e.donnees ->> 'idService' order by date desc)
@@ -25,7 +25,7 @@ les_completudes_de_la_version_actuelle AS (
     FROM journal_mss.evenements e
              JOIN versions_actuelles_des_services actuelle on actuelle.id_service = e.donnees->>'idService'
     WHERE type = 'COMPLETUDE_SERVICE_MODIFIEE'
-      AND actuelle.version_service = donnees ->> 'versionService'
+      AND actuelle.version_service = COALESCE(donnees ->> 'versionService', 'v1')
 ),
 mesures_mises_a_plat AS (
     SELECT
