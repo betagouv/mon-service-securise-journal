@@ -11,8 +11,8 @@ if [[ "$INSTANCE_NUMBER" != "0" ]]; then
   exit 0
 fi
 
-psql -d "$URL_SERVEUR_BASE_DONNEES" <<SQL
-
+# On fait plusieurs appels psql pour éviter une ouverture de connexion trop longue
+cat <<SQL | xargs -I {sql} psql -d "$URL_SERVEUR_BASE_DONNEES" -c "{sql}"
   CALL journal_mss.charge_donnees_completude();
   CALL journal_mss.charge_donnees_description_service();
   CALL journal_mss.charge_donnees_description_service_v2();
@@ -30,7 +30,5 @@ psql -d "$URL_SERVEUR_BASE_DONNEES" <<SQL
   CALL journal_mss.charge_donnees_indice_cyber_hebdomadaire();
   CALL journal_mss.charge_donnees_indice_cyber_tous_les_vendredis_sample_and_hold();
   CALL journal_mss.charge_donnees_completude_premiere_fois_80();
-
   INSERT INTO journal_mss.technique_chargement_donnees(date_chargement) VALUES (now());
-
 SQL
