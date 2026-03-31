@@ -28,9 +28,8 @@ services:
     depends_on:
       - mss-journal-db
 
-  # https://github.com/nodejs/docker-node/blob/main/README.md#how-to-use-this-image
   node:
-    image: docker.io/node:22
+    image: docker.io/node:${NODE_VERSION:-latest}
     volumes:
       - ./:/home/node/app
     working_dir: /home/node/app

@@ -53,7 +53,7 @@ Créer un fichier `.env` en copiant fichier `.env.template` puis valoriser chaqu
 Mettre à niveau le schéma de la base de données, via [`knex.js`](https://knexjs.org/) qui s'exécute dans le conteneur `node`.
 
 ```sh
-$ docker compose up node
+$ NODE_VERSION="$(cat .nvmrc)" docker compose up node
 ```
 
 Créer les procédures stockées grâce au script [`cree_toutes_les_procedures.sh`](./procedures_stockees/cree_toutes_les_procedures.sh)
