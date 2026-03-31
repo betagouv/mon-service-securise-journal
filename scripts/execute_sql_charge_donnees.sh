@@ -1,4 +1,5 @@
-#! /bin/bash -l
+#!/usr/bin/env bash
+set -l
 
 # Ce script est lancé par le crontab dédié à Clever Cloud.
 # Il permet au process node d'avoir accès aux variables d'env
