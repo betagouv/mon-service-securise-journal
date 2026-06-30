@@ -27,6 +27,7 @@ cat <<SQL | xargs -I {sql} psql -d "$URL_SERVEUR_BASE_DONNEES" -c "{sql}"
   CALL journal_mss.charge_donnees_categorie_donnees_traitees_service_v2();
   CALL journal_mss.charge_donnees_statuts_des_mesures();
   CALL journal_mss.charge_donnees_risques();
+  CALL journal_mss.charge_donnees_risques_v2();
   CALL journal_mss.charge_donnees_indice_cyber_courant();
   CALL journal_mss.charge_donnees_indice_cyber_hebdomadaire();
   CALL journal_mss.charge_donnees_indice_cyber_tous_les_vendredis_sample_and_hold();
